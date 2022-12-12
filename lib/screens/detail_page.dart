@@ -93,208 +93,220 @@ class _DetailPageState extends State<DetailPage> {
       )),
     );
   }
-}
 
-Widget _detailBuilder(width, DetailModel data) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              data.data.title,
-              style: TextStyle(fontFamily: "bold", fontSize: width / 15),
+  Widget _detailBuilder(width, DetailModel data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                data.data.title,
+                style: TextStyle(fontFamily: "bold", fontSize: width / 15),
+              ),
             ),
-          ),
-          CircleAvatar(
-            backgroundColor: Color(0xff23252F),
-            child: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Iconsax.heart_add5,
-                  color: Colors.red,
-                )),
-          ),
-        ],
-      ),
-      SizedBox(height: 10),
-      StaggeredGrid.count(
-        crossAxisCount: 2,
-        children: [
-          _info("Status", data.data.status),
-          _info("Type", data.data.type),
-          _info("Released", data.data.released),
-          _info("Author", data.data.author),
-        ],
-      ),
-      SizedBox(height: 10),
-      CustomTitle(title: "Genre"),
-      SizedBox(height: 7),
-      Container(
-        height: 35,
-        child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: data.data.genre.map((e) => GenreCard(data: e)).toList()),
-      ),
-      if (data.data.description != "") SizedBox(height: 10),
-      if (data.data.description != "") CustomTitle(title: "Sinopsis"),
-      if (data.data.description != "") SizedBox(height: 5),
-      if (data.data.description != "") Text(data.data.description),
-      SizedBox(height: 10),
-      CustomTitle(title: "Chapter"),
-      SizedBox(height: 7),
-      StaggeredGrid.count(
-        crossAxisCount: 1,
-        mainAxisSpacing: 10,
-        children: data.data.chapter.map((e) => _chapter(width, e)).toList(),
-      )
-    ],
-  );
-}
+            CircleAvatar(
+              backgroundColor: Color(0xff23252F),
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Iconsax.heart_add5,
+                    color: Colors.red,
+                  )),
+            ),
+          ],
+        ),
+        SizedBox(height: 10),
+        StaggeredGrid.count(
+          crossAxisCount: 2,
+          children: [
+            _info("Status", data.data.status),
+            _info("Type", data.data.type),
+            _info("Released", data.data.released),
+            _info("Author", data.data.author),
+          ],
+        ),
+        SizedBox(height: 10),
+        CustomTitle(title: "Genre"),
+        SizedBox(height: 7),
+        Container(
+          height: 35,
+          child: ListView(
+              scrollDirection: Axis.horizontal,
+              children:
+                  data.data.genre.map((e) => GenreCard(data: e)).toList()),
+        ),
+        if (data.data.description != "") SizedBox(height: 10),
+        if (data.data.description != "") CustomTitle(title: "Sinopsis"),
+        if (data.data.description != "") SizedBox(height: 5),
+        if (data.data.description != "") Text(data.data.description),
+        SizedBox(height: 10),
+        CustomTitle(title: "Chapter"),
+        SizedBox(height: 7),
+        StaggeredGrid.count(
+          crossAxisCount: 1,
+          mainAxisSpacing: 10,
+          children: data.data.chapter
+              .asMap()
+              .entries
+              .map((e) => _chapter(width, e.value, e.key, data.data.chapter))
+              .toList(),
+        )
+      ],
+    );
+  }
 
-Widget _loading(width) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Shimmer(
-            width: width / 1.5,
-            height: width / 13,
-            radius: 100,
-          ),
-          Shimmer(
-            width: width / 10,
-            height: width / 10,
-            radius: 100,
-          )
-        ],
-      ),
-      SizedBox(height: 20),
-      StaggeredGrid.count(
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        children: [
-          Shimmer(
-            width: width,
-            height: width / 20,
-            radius: 100,
-          ),
-          Shimmer(
-            width: width,
-            height: width / 20,
-            radius: 100,
-          ),
-          Shimmer(
-            width: width,
-            height: width / 20,
-            radius: 100,
-          ),
-          Shimmer(
-            width: width,
-            height: width / 20,
-            radius: 100,
-          ),
-        ],
-      ),
-      SizedBox(height: 20),
-      Shimmer(
-        width: width / 2.5,
-        height: width / 15,
-        radius: 100,
-      ),
-      SizedBox(height: 10),
-      Container(
-        height: 35,
-        child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: List.generate(
+  Widget _loading(width) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Shimmer(
+              width: width / 1.5,
+              height: width / 13,
+              radius: 100,
+            ),
+            Shimmer(
+              width: width / 10,
+              height: width / 10,
+              radius: 100,
+            )
+          ],
+        ),
+        SizedBox(height: 20),
+        StaggeredGrid.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          children: [
+            Shimmer(
+              width: width,
+              height: width / 20,
+              radius: 100,
+            ),
+            Shimmer(
+              width: width,
+              height: width / 20,
+              radius: 100,
+            ),
+            Shimmer(
+              width: width,
+              height: width / 20,
+              radius: 100,
+            ),
+            Shimmer(
+              width: width,
+              height: width / 20,
+              radius: 100,
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Shimmer(
+          width: width / 2.5,
+          height: width / 15,
+          radius: 100,
+        ),
+        SizedBox(height: 10),
+        Container(
+          height: 35,
+          child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: List.generate(
+                5,
+                (index) => Container(
+                  margin: EdgeInsets.only(left: 5, right: 10),
+                  child: Shimmer(
+                    width: width / 4,
+                    height: width / 10,
+                    radius: 100,
+                  ),
+                ),
+              )),
+        ),
+        SizedBox(height: 20),
+        Shimmer(
+          width: width / 2.5,
+          height: width / 15,
+          radius: 100,
+        ),
+        SizedBox(height: 10),
+        Shimmer(
+          width: width,
+          height: width / 20,
+          radius: 100,
+        ),
+        SizedBox(height: 10),
+        Shimmer(
+          width: width / 1.4,
+          height: width / 20,
+          radius: 100,
+        ),
+        SizedBox(height: 20),
+        Shimmer(
+          width: width / 2.5,
+          height: width / 15,
+          radius: 100,
+        ),
+        SizedBox(height: 10),
+        StaggeredGrid.count(
+          crossAxisCount: 1,
+          mainAxisSpacing: 10,
+          children: List.generate(
               5,
               (index) => Container(
-                margin: EdgeInsets.only(left: 5, right: 10),
-                child: Shimmer(
-                  width: width / 4,
-                  height: width / 10,
-                  radius: 100,
-                ),
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Shimmer(
+                      width: width,
+                      height: width / 9,
+                      radius: 10,
+                    ),
+                  )),
+        )
+      ],
+    );
+  }
+
+  Widget _chapter(width, data, int i, List<Chapter> chapter) {
+    return InkWell(
+      onTap: () => Get.to(
+          () => Read(
+                href: data.href,
+                chapter: chapter,
+                hrefKomik: widget.href,
+                index: i,
               ),
-            )),
-      ),
-      SizedBox(height: 20),
-      Shimmer(
-        width: width / 2.5,
-        height: width / 15,
-        radius: 100,
-      ),
-      SizedBox(height: 10),
-      Shimmer(
-        width: width,
-        height: width / 20,
-        radius: 100,
-      ),
-      SizedBox(height: 10),
-      Shimmer(
-        width: width / 1.4,
-        height: width / 20,
-        radius: 100,
-      ),
-      SizedBox(height: 20),
-      Shimmer(
-        width: width / 2.5,
-        height: width / 15,
-        radius: 100,
-      ),
-      SizedBox(height: 10),
-      StaggeredGrid.count(
-        crossAxisCount: 1,
-        mainAxisSpacing: 10,
-        children: List.generate(
-            5,
-            (index) => Container(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Shimmer(
-                    width: width,
-                    height: width / 9,
-                    radius: 10,
-                  ),
-                )),
-      )
-    ],
-  );
-}
-
-Widget _chapter(width, data) {
-  return InkWell(
-    onTap: () =>
-        Get.to(() => Read(href: data.href), transition: Transition.rightToLeftWithFade),
-    child: Container(
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      decoration: BoxDecoration(
-          color: Color(0xff23252F), borderRadius: BorderRadius.circular(8)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(data.title),
-          Text(
-            data.date,
-            style: TextStyle(fontSize: width / 35, color: Color(0xff6B6E7D)),
-          )
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _info(String title, String value) {
-  return RichText(
-      text: TextSpan(
-          style: TextStyle(fontFamily: "montserrat", fontSize: Get.width / 27),
+          transition: Transition.rightToLeftWithFade),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        decoration: BoxDecoration(
+            color: Color(0xff23252F), borderRadius: BorderRadius.circular(8)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-        TextSpan(text: "$title : ", style: TextStyle(fontFamily: "semibold")),
-        TextSpan(text: value)
-      ]));
+            Text(data.title),
+            Text(
+              data.date,
+              style: TextStyle(fontSize: width / 35, color: Color(0xff6B6E7D)),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _info(String title, String value) {
+    return RichText(
+        text: TextSpan(
+            style:
+                TextStyle(fontFamily: "montserrat", fontSize: Get.width / 27),
+            children: [
+          TextSpan(text: "$title : ", style: TextStyle(fontFamily: "semibold")),
+          TextSpan(text: value)
+        ]));
+  }
 }

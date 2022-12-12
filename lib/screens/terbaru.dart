@@ -97,7 +97,7 @@ class _TerbaruPageState extends State<TerbaruPage> {
             everythingLoaded = true;
           });
         }
-        refetch(data, page);
+        refetch(data, page + 1);
       },
       everythingLoaded: everythingLoaded,
       children: [
