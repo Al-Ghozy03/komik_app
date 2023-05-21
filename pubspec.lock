@@ -25,26 +25,24 @@ packages:
   cached_network_image:
     dependency: "direct main"
     description:
-      path: cached_network_image
-      ref: ff72f00f142f13d889d7549e013af91cb0b523ab
-      resolved-ref: ff72f00f142f13d889d7549e013af91cb0b523ab
-      url: "https://github.com/XuannThucc/flutter_cached_network_image.git"
-    source: git
-    version: "3.2.0"
+      name: cached_network_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.3"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
       name: cached_network_image_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   cached_network_image_web:
     dependency: transitive
     description:
       name: cached_network_image_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   carousel_slider:
     dependency: "direct main"
     description:
@@ -231,7 +229,7 @@ packages:
     source: hosted
     version: "1.0.2"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"
@@ -334,7 +332,7 @@ packages:
     source: hosted
     version: "1.9.0"
   sqflite:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sqflite
       url: "https://pub.dartlang.org"

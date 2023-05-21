@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures, avoid_unnecessary_containers, prefer_const_constructors_in_immutables
 
 import 'dart:async';
 

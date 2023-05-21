@@ -1,5 +1,4 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -17,9 +16,17 @@ class Navbar extends StatefulWidget {
 }
 
 class _NavbarState extends State<Navbar> {
+  PageController pageController = PageController(initialPage: 0);
+  int currentPageIndex = 0;
   int selectedIndex = 0;
   void onTapItem(int i) {
     setState(() {
+      currentPageIndex = i;
+      pageController.animateToPage(
+        i,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
       selectedIndex = i;
     });
   }
@@ -59,7 +66,15 @@ class _NavbarState extends State<Navbar> {
           ],
         ),
       ),
-      body: screens[selectedIndex],
+      body: PageView(
+        controller: pageController,
+        onPageChanged: (value) {
+          setState(() {
+            currentPageIndex = value;
+          });
+        },
+        children: screens,
+      ),
     );
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
+// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, must_be_immutable
 
 import 'dart:async';
 
@@ -34,21 +34,33 @@ class _ReadState extends State<Read> {
   int currentIndex = 0;
 
   void nextChapter() {
+    if (currentIndex == 0) return;
     setState(() {
-      if (currentIndex == 0) return;
       currentIndex -= 1;
     });
-    if (currentIndex == 0) return;
-    refetch();
+    Get.off(
+        () => Read(
+            href: widget.chapter[currentIndex].href,
+            chapter: widget.chapter,
+            hrefKomik: widget.hrefKomik,
+            index: currentIndex),
+        transition: Transition.rightToLeftWithFade,
+        preventDuplicates: false);
   }
 
   void prevChapter() {
+    if (currentIndex == widget.chapter.length - 1) return;
     setState(() {
-      if (currentIndex == widget.chapter.length - 1) return;
       currentIndex += 1;
     });
-    if (currentIndex == widget.chapter.length - 1) return;
-    refetch();
+    Get.off(
+        () => Read(
+            href: widget.chapter[currentIndex].href,
+            chapter: widget.chapter,
+            hrefKomik: widget.hrefKomik,
+            index: currentIndex),
+        transition: Transition.leftToRightWithFade,
+        preventDuplicates: false);
   }
 
   FutureOr refetch() {
@@ -60,6 +72,12 @@ class _ReadState extends State<Read> {
     currentIndex = widget.index;
     read = ApiService.read(widget.href);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -80,140 +98,149 @@ class _ReadState extends State<Read> {
                 color: Colors.white,
               ),
             ),
-      appBar: PreferredSize(
-        preferredSize: Size(0, 50),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: AppBar(
-            elevation: 0,
-            leading: IconButton(
-                onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left)),
-            backgroundColor: dark,
-          ),
-        ),
-      ),
-      body: SafeArea(
-          child: NotificationListener(
-        onNotification: (ScrollNotification notification) {
-          setState(() {
-            if (notification.metrics.pixels > 2177.974055120945) {
-              showFloatButton = true;
-            } else {
-              showFloatButton = false;
-            }
-          });
-          // print(notification.metrics.pixels);
-          return true;
+      body: FutureBuilder(
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState != ConnectionState.done)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          if (snapshot.hasError)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          if (snapshot.hasData) return _chapterBuilder(snapshot.data);
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         },
-        child: SingleChildScrollView(
-          controller: scrollController,
-          child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: FutureBuilder(
-                builder: (context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  if (snapshot.hasError)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  if (snapshot.hasData) return _chapterBuilder(snapshot.data);
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-                future: read,
-              )),
-        ),
-      )),
+        future: read,
+      ),
     );
   }
 
   Widget _buttonAction(width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (currentIndex != widget.chapter.length - 1)
-          ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: blueTheme,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100))),
-              onPressed: () => prevChapter(),
-              icon: Icon(
-                Iconsax.arrow_left_2,
-                size: width / 20,
-              ),
-              label: Text(
-                "Prev",
-                style: TextStyle(fontSize: width / 25),
-              )),
-        if (currentIndex != 0)
-          ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: blueTheme,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100))),
-              onPressed: () => nextChapter(),
-              icon: Text(
-                "Next",
-                style: TextStyle(fontSize: width / 25),
-              ),
-              label: Transform.rotate(
-                angle: 355,
-                child: Icon(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (currentIndex != widget.chapter.length - 1)
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: blueTheme,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100))),
+                onPressed: () => prevChapter(),
+                icon: Icon(
                   Iconsax.arrow_left_2,
                   size: width / 20,
                 ),
-              ))
-      ],
+                label: Text(
+                  "Prev",
+                  style: TextStyle(fontSize: width / 25),
+                )),
+          if (currentIndex != 0)
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: blueTheme,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100))),
+                onPressed: () => nextChapter(),
+                icon: Text(
+                  "Next",
+                  style: TextStyle(fontSize: width / 25),
+                ),
+                label: Transform.rotate(
+                  angle: 355,
+                  child: Icon(
+                    Iconsax.arrow_left_2,
+                    size: width / 20,
+                  ),
+                ))
+        ],
+      ),
     );
   }
 
   Widget _chapterBuilder(ReadModel data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+    return NotificationListener(
+      onNotification: (ScrollNotification notification) {
+        setState(() {
+          if (notification.metrics.pixels > 2177.974055120945) {
+            showFloatButton = true;
+          } else {
+            showFloatButton = false;
+          }
+        });
+        return true;
+      },
+      child: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverAppBar(
+            backgroundColor: dark,
+            leading: IconButton(
+                onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left)),
+            pinned: true,
+            // snap: true,
+            // floating: true,
+            expandedHeight: 150,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
                 data.data[0].title,
-                style: TextStyle(fontFamily: "bold", fontSize: Get.width / 15),
-                textAlign: TextAlign.center,
+                style: TextStyle(fontFamily: "bold", fontSize: Get.width / 20),
               ),
-              SizedBox(height: 20),
-              _buttonAction(Get.width),
-              SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-        Column(
-          children: data.data[0].panel
-              .map((e) => CachedNetworkImage(
-                    imageUrl: e,
-                    placeholder: (context, url) => Transform.scale(
-                      scale: 0.5,
-                      child: CircularProgressIndicator(),
+          SliverList(
+              delegate: SliverChildBuilderDelegate((context, i) {
+            if (i == 0)
+              return Column(
+                children: [
+                  _buttonAction(Get.width),
+                  SizedBox(height: 20),
+                  CachedNetworkImage(
+                    imageUrl: data.data[0].panel[i],
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Center(
+                      child: CircularProgressIndicator(
+                        value: progress.progress,
+                      ),
                     ),
-                    errorWidget: (context, url, error) => Center(
-                      child: Text("Can't load image"),
+                  )
+                ],
+              );
+            if (i == data.data[0].panel.length - 1)
+              return Column(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: data.data[0].panel[i],
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Center(
+                      child: CircularProgressIndicator(
+                        value: progress.progress,
+                      ),
                     ),
-                    filterQuality: FilterQuality.low,
-                  ))
-              .toList(),
-        ),
-        SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buttonAction(Get.width),
-        ),
-        SizedBox(height: 50),
-      ],
+                  ),
+                  SizedBox(height: 20),
+                  _buttonAction(Get.width),
+                  SizedBox(height: 80),
+                ],
+              );
+            return CachedNetworkImage(
+              imageUrl: data.data[0].panel[i],
+              progressIndicatorBuilder: (context, url, progress) => Container(
+                margin: EdgeInsets.symmetric(vertical: 45),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
+                ),
+              ),
+            );
+          }, childCount: data.data[0].panel.length))
+        ],
+      ),
     );
   }
 }

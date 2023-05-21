@@ -33,10 +33,11 @@ class _CardColState extends State<CardCol> {
             height: width / 3.5,
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      widget.data.thumbnail,
-                    ),
-                    fit: BoxFit.cover),
+                  image: CachedNetworkImageProvider(
+                    widget.data.thumbnail,
+                  ),
+                  fit: BoxFit.cover,
+                ),
                 borderRadius: BorderRadius.circular(10)),
             child: Align(
                 alignment: Alignment.bottomRight,

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:komik_app/models/detail.dart';
 import 'package:komik_app/models/genre_menu.dart';
@@ -10,7 +8,7 @@ import 'package:komik_app/models/search.dart';
 import 'package:komik_app/models/terbaru.dart';
 
 class ApiService {
-  static String baseUrl = "https://komikcast-api.up.railway.app";
+  static String baseUrl = "https://komikcast-api.cyclic.app";
 
   static Future read(String href) async {
     final res = await http.get(Uri.parse("$baseUrl/read$href"));

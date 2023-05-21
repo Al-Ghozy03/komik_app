@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
+// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures, must_be_immutable, sized_box_for_whitespace
 
 import 'dart:async';
 
@@ -30,7 +30,6 @@ class _GenreState extends State<Genre> {
   bool isLoading = false;
 
   FutureOr refetch(GenreModel data, page) {
-    print(page);
     setState(() {
       isLoading = true;
       ApiService.genre(widget.href, page).then((value) {

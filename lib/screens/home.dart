@@ -28,12 +28,15 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   final height = Get.height;
   final width = Get.width;
   late Future recommended;
   late Future terbaru;
   late Future genre;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
@@ -227,7 +231,7 @@ Widget _terbaruBuilder(width, Terbaru data) {
     crossAxisCount: 2,
     crossAxisSpacing: 16,
     mainAxisSpacing: 20,
-    children: data.data.sublist(0, 10).map((e) => CardCol(data: e)).toList(),
+    children: data.data.map((e) => CardCol(data: e)).toList(),
   );
 }
 
