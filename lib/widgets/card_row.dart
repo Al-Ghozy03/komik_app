@@ -78,7 +78,7 @@ class _CardRowState extends State<CardRow> {
                   SizedBox(height: 2),
                   Text(
                     widget.chapter != null
-                        ? "Chapter ${widget.chapter}"
+                        ? widget.chapter.toString()
                         : widget.genre.toString(),
                     style: TextStyle(fontSize: width / 30),
                     overflow: TextOverflow.ellipsis,

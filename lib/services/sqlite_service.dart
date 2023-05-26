@@ -23,9 +23,20 @@ class SqliteService {
     await db.insert("favorite", values);
   }
 
-  static Future readfavorite() async {
+  static Future readFavorite() async {
     final db = await createFavorite();
-    final res = await db.query("favorite");
-   return res.map((e) => FavoriteModel.fromJson(e)).toList();
+    final res = await db.query("favorite", orderBy: "id DESC");
+    return res.map((e) => FavoriteModel.fromJson(e)).toList();
+  }
+
+  static Future<int> findOneFavorite(String column, String value) async {
+    final db = await createFavorite();
+    final res = await db.query("favorite", where: "$column = '$value'");
+    return res.length;
+  }
+
+  static Future deleteFavorite(String href) async {
+    final db = await createFavorite();
+    await db.delete("favorite", where: "href = '$href'");
   }
 }

@@ -1,4 +1,6 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable, curly_braces_in_flow_control_structures, sized_box_for_whitespace
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable, curly_braces_in_flow_control_structures, sized_box_for_whitespace, unrelated_type_equality_checks
+
+import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +26,18 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   late Future detail;
+  late Future isFavorite;
+
+  FutureOr checkFavorite() {
+    setState(() {
+      isFavorite = SqliteService.findOneFavorite("href", widget.href);
+    });
+  }
+
   @override
   void initState() {
     detail = ApiService.detail(widget.href);
+    isFavorite = SqliteService.findOneFavorite("href", widget.href);
     super.initState();
   }
 
@@ -109,24 +120,57 @@ class _DetailPageState extends State<DetailPage> {
                 style: TextStyle(fontFamily: "bold", fontSize: width / 15),
               ),
             ),
-            CircleAvatar(
-              backgroundColor: Color(0xff23252F),
-              child: IconButton(
-                  onPressed: () async {
-                    await SqliteService.insertFavorite({
-                      "title": data.data.title,
-                      "thumbnail": data.data.thumbnail,
-                      "rating": data.data.rating,
-                      "href": widget.href,
-                      "type": data.data.type,
-                      "genre": data.data.genre.map((e) => e.title).join(", "),
-                    });
-                  },
-                  icon: Icon(
-                    Iconsax.heart_add5,
-                    color: Colors.red,
-                  )),
-            ),
+            FutureBuilder(
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData)
+                  return CircleAvatar(
+                    backgroundColor: Color(0xff23252F),
+                    child: IconButton(
+                        onPressed: () async {
+                          if (snapshot.data != 1) {
+                            await SqliteService.insertFavorite({
+                              "title": data.data.title,
+                              "thumbnail": data.data.thumbnail,
+                              "rating": data.data.rating,
+                              "href": widget.href,
+                              "type": data.data.type,
+                              "genre": data.data.genre
+                                  .map((e) => e.title)
+                                  .join(", "),
+                            });
+                            checkFavorite();
+                          }
+                        },
+                        icon: Icon(
+                          snapshot.data != 1
+                              ? Iconsax.heart_add5
+                              : Iconsax.heart_tick5,
+                          color: snapshot.data != 1 ? Colors.red : blueTheme,
+                        )),
+                  );
+
+                return CircleAvatar(
+                  backgroundColor: Color(0xff23252F),
+                  child: IconButton(
+                      onPressed: () async {
+                        await SqliteService.insertFavorite({
+                          "title": data.data.title,
+                          "thumbnail": data.data.thumbnail,
+                          "rating": data.data.rating,
+                          "href": widget.href,
+                          "type": data.data.type,
+                          "genre":
+                              data.data.genre.map((e) => e.title).join(", "),
+                        });
+                      },
+                      icon: Icon(
+                        Iconsax.heart_add5,
+                        color: Colors.red,
+                      )),
+                );
+              },
+              future: isFavorite,
+            )
           ],
         ),
         SizedBox(height: 10),

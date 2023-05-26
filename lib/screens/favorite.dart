@@ -14,6 +14,13 @@ class Favorite extends StatefulWidget {
 }
 
 class _FavoriteState extends State<Favorite> {
+  late Future favorite;
+  @override
+  void initState() {
+    favorite = SqliteService.readFavorite();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +40,7 @@ class _FavoriteState extends State<Favorite> {
                   if (snapshot.hasData) return _list(snapshot.data);
                   return Text("error");
                 },
-                future: SqliteService.readfavorite(),
+                future: favorite,
               )
             ],
           ),
@@ -46,14 +53,19 @@ class _FavoriteState extends State<Favorite> {
 Widget _list(List<FavoriteModel> data) {
   return Column(
     children: data
-        .map((e) => CardRow(
+        .map((e) => Dismissible(
+            onDismissed: (direction) {
+              SqliteService.deleteFavorite(e.href);
+            },
+            key: UniqueKey(),
+            child: CardRow(
               title: e.title,
               href: e.href,
               rating: e.rating,
               thumbnail: e.thumbnail,
               type: e.type,
               genre: e.genre,
-            ))
+            )))
         .toList(),
   );
 }
