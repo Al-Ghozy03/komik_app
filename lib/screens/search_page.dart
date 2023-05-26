@@ -88,7 +88,12 @@ Widget _listBuilder(Search data) {
   return ListView(
     children: data.data
         .map((e) => CardRow(
-              data: e,
+             title: e.title,
+                href: e.href,
+                rating: e.rating,
+                thumbnail: e.thumbnail,
+                type: e.type,
+                chapter: e.chapter,
             ))
         .toList(),
   );

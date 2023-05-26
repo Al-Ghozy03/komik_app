@@ -48,7 +48,7 @@ dependencies:
   fade_shimmer: ^2.2.0
   infinite_scroll: ^1.1.1
   leak_detector: ^1.0.1+4
-  sqflite: ^2.2.2
+  sqflite: ^2.0.2
   path: ^1.8.2
 
 

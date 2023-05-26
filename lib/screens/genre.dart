@@ -101,7 +101,16 @@ class _GenreState extends State<Genre> {
         refetch(data, page);
       },
       everythingLoaded: everythingLoaded,
-      children: data.data.map((e) => CardRow(data: e)).toList(),
+      children: data.data
+          .map((e) => CardRow(
+                title: e.title,
+                href: e.href,
+                rating: e.rating,
+                thumbnail: e.thumbnail,
+                type: e.type,
+                chapter: e.chapter,
+              ))
+          .toList(),
     );
   }
 

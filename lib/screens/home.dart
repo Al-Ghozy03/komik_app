@@ -19,7 +19,7 @@ import 'package:komik_app/widgets/card_col.dart';
 import 'package:komik_app/widgets/genre_card.dart';
 import 'package:komik_app/widgets/loading_col.dart';
 import 'package:komik_app/widgets/shimmer.dart';
-import 'package:komik_app/widgets/cusotm_title.dart';
+import 'package:komik_app/widgets/custom_title.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:komik_app/services/sqlite_service.dart';
 import 'package:komik_app/widgets/navbar.dart';
 
 void main() async {
@@ -20,6 +21,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    SqliteService.createFavorite();
     super.initState();
   }
 

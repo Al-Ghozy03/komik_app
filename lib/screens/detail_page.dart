@@ -12,7 +12,7 @@ import 'package:komik_app/models/detail.dart';
 import 'package:komik_app/services/sqlite_service.dart';
 import 'package:komik_app/widgets/genre_card.dart';
 import 'package:komik_app/widgets/shimmer.dart';
-import 'package:komik_app/widgets/cusotm_title.dart';
+import 'package:komik_app/widgets/custom_title.dart';
 
 class DetailPage extends StatefulWidget {
   String thumbnail;
@@ -113,14 +113,14 @@ class _DetailPageState extends State<DetailPage> {
               backgroundColor: Color(0xff23252F),
               child: IconButton(
                   onPressed: () async {
-                    // await SqliteService.insertFavorite({
-                    //   // "id": null,
-                    //   "title": data.data.title,
-                    //   "thumbnail": data.data.thumbnail,
-                    //   "rating": data.data.rating,
-                    //   "href": widget.href,
-                    //   "type": data.data.type,
-                    // });
+                    await SqliteService.insertFavorite({
+                      "title": data.data.title,
+                      "thumbnail": data.data.thumbnail,
+                      "rating": data.data.rating,
+                      "href": widget.href,
+                      "type": data.data.type,
+                      "genre": data.data.genre.map((e) => e.title).join(", "),
+                    });
                   },
                   icon: Icon(
                     Iconsax.heart_add5,

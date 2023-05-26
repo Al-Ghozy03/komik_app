@@ -68,11 +68,7 @@ class _NavbarState extends State<Navbar> {
       ),
       body: PageView(
         controller: pageController,
-        onPageChanged: (value) {
-          setState(() {
-            currentPageIndex = value;
-          });
-        },
+        onPageChanged: onTapItem,
         children: screens,
       ),
     );

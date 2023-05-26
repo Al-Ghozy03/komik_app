@@ -9,8 +9,22 @@ import 'package:komik_app/colors.dart';
 import 'package:komik_app/screens/detail_page.dart';
 
 class CardRow extends StatefulWidget {
-  final data;
-  CardRow({super.key, required this.data});
+  String title;
+  String thumbnail;
+  String rating;
+  String href;
+  String type;
+  String? chapter;
+  String? genre;
+  CardRow(
+      {super.key,
+      required this.title,
+      required this.thumbnail,
+      required this.rating,
+      required this.type,
+      required this.href,
+      this.chapter,
+      this.genre});
 
   @override
   State<CardRow> createState() => _CardRowState();
@@ -37,15 +51,14 @@ class _CardRowState extends State<CardRow> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                      image: CachedNetworkImageProvider(widget.data.thumbnail),
+                      image: CachedNetworkImageProvider(widget.thumbnail),
                       fit: BoxFit.cover)),
               child: Align(
                   alignment: Alignment.topRight,
                   child: Image.asset(
-                      widget.data.type.toString().toLowerCase() == "manga"
+                      widget.type.toString().toLowerCase() == "manga"
                           ? "assets/images/japan.png"
-                          : widget.data.type.toString().toLowerCase() ==
-                                  "manhwa"
+                          : widget.type.toString().toLowerCase() == "manhwa"
                               ? "assets/images/korsel.png"
                               : "assets/images/china.png",
                       height: 15)),
@@ -56,7 +69,7 @@ class _CardRowState extends State<CardRow> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.data.title,
+                    widget.title,
                     style:
                         TextStyle(fontFamily: "semibold", fontSize: width / 20),
                     maxLines: 2,
@@ -64,8 +77,11 @@ class _CardRowState extends State<CardRow> {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    widget.data.chapter,
+                    widget.chapter != null
+                        ? "Chapter ${widget.chapter}"
+                        : widget.genre.toString(),
                     style: TextStyle(fontSize: width / 30),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 4),
                   Row(
@@ -77,7 +93,7 @@ class _CardRowState extends State<CardRow> {
                       ),
                       SizedBox(width: 3),
                       Text(
-                        widget.data.rating,
+                        widget.rating,
                         style: TextStyle(fontSize: width / 32),
                       )
                     ],
@@ -89,7 +105,7 @@ class _CardRowState extends State<CardRow> {
         ),
       ),
       openBuilder: (context, action) =>
-          DetailPage(thumbnail: widget.data.thumbnail, href: widget.data.href),
+          DetailPage(thumbnail: widget.thumbnail, href: widget.href),
     );
   }
 }
