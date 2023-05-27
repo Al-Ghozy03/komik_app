@@ -10,6 +10,7 @@ import 'package:komik_app/colors.dart';
 import 'package:komik_app/models/detail.dart';
 import 'package:komik_app/models/read.dart';
 import 'package:komik_app/services/api_service.dart';
+import 'package:komik_app/services/sqlite_service.dart';
 
 class Read extends StatefulWidget {
   String href;
@@ -33,11 +34,25 @@ class _ReadState extends State<Read> {
   bool showFloatButton = false;
   int currentIndex = 0;
 
-  void nextChapter() {
+  void nextChapter() async {
     if (currentIndex == 0) return;
     setState(() {
       currentIndex -= 1;
     });
+    final db = await SqliteService.initDB();
+    List<Map<String, dynamic>> chapterHistory = await db.query(
+        "chapter_history",
+        where: "href = '${widget.chapter[currentIndex].href}'",
+        limit: 1);
+
+    if (chapterHistory.isEmpty) {
+      await SqliteService.insert("chapter_history", {
+        "href_id": widget.hrefKomik,
+        "title": widget.chapter[currentIndex].title,
+        "href": widget.chapter[currentIndex].href,
+        "update_at": DateTime.now().toString()
+      });
+    }
     Get.off(
         () => Read(
             href: widget.chapter[currentIndex].href,
@@ -48,11 +63,26 @@ class _ReadState extends State<Read> {
         preventDuplicates: false);
   }
 
-  void prevChapter() {
+  void prevChapter() async {
     if (currentIndex == widget.chapter.length - 1) return;
     setState(() {
       currentIndex += 1;
     });
+
+    final db = await SqliteService.initDB();
+    List<Map<String, dynamic>> chapterHistory = await db.query(
+        "chapter_history",
+        where: "href = '${widget.chapter[currentIndex].href}'",
+        limit: 1);
+
+    if (chapterHistory.isEmpty) {
+      await SqliteService.insert("chapter_history", {
+        "href_id": widget.hrefKomik,
+        "title": widget.chapter[currentIndex].title,
+        "href": widget.chapter[currentIndex].href,
+        "update_at": DateTime.now().toString()
+      });
+    }
     Get.off(
         () => Read(
             href: widget.chapter[currentIndex].href,
@@ -61,10 +91,6 @@ class _ReadState extends State<Read> {
             index: currentIndex),
         transition: Transition.leftToRightWithFade,
         preventDuplicates: false);
-  }
-
-  FutureOr refetch() {
-    read = ApiService.read(widget.chapter[currentIndex].href);
   }
 
   @override
@@ -83,6 +109,16 @@ class _ReadState extends State<Read> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: dark,
+        leading: IconButton(
+            onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left)),
+        title: Text(
+          widget.chapter[currentIndex].title,
+          style: TextStyle(fontFamily: "medium", fontSize: Get.width / 20),
+        ),
+      ),
       floatingActionButton: !showFloatButton
           ? Container()
           : FloatingActionButton(
@@ -176,73 +212,54 @@ class _ReadState extends State<Read> {
         });
         return true;
       },
-      child: CustomScrollView(
+      child: ListView.builder(
         controller: scrollController,
-        slivers: [
-          SliverAppBar(
-            backgroundColor: dark,
-            leading: IconButton(
-                onPressed: () => Get.back(), icon: Icon(Iconsax.arrow_left)),
-            pinned: true,
-            // snap: true,
-            // floating: true,
-            expandedHeight: 150,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                data.data[0].title,
-                style: TextStyle(fontFamily: "bold", fontSize: Get.width / 20),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate((context, i) {
-            if (i == 0)
-              return Column(
-                children: [
-                  _buttonAction(Get.width),
-                  SizedBox(height: 20),
-                  CachedNetworkImage(
-                    imageUrl: data.data[0].panel[i],
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
-                      ),
-                    ),
-                  )
-                ],
-              );
-            if (i == data.data[0].panel.length - 1)
-              return Column(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: data.data[0].panel[i],
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
-                      ),
+        itemCount: data.data[0].panel.length,
+        itemBuilder: (context, i) {
+          if (i == 0)
+            return Column(
+              children: [
+                SizedBox(height: 20),
+                _buttonAction(Get.width),
+                SizedBox(height: 20),
+                CachedNetworkImage(
+                  imageUrl: data.data[0].panel[i],
+                  progressIndicatorBuilder: (context, url, progress) => Center(
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
                     ),
                   ),
-                  SizedBox(height: 20),
-                  _buttonAction(Get.width),
-                  SizedBox(height: 80),
-                ],
-              );
-            return CachedNetworkImage(
-              imageUrl: data.data[0].panel[i],
-              progressIndicatorBuilder: (context, url, progress) => Container(
-                margin: EdgeInsets.symmetric(vertical: 45),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    value: progress.progress,
+                )
+              ],
+            );
+          if (i == data.data[0].panel.length - 1)
+            return Column(
+              children: [
+                CachedNetworkImage(
+                  imageUrl: data.data[0].panel[i],
+                  progressIndicatorBuilder: (context, url, progress) => Center(
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(height: 20),
+                _buttonAction(Get.width),
+                SizedBox(height: 80),
+              ],
             );
-          }, childCount: data.data[0].panel.length))
-        ],
+          return CachedNetworkImage(
+            imageUrl: data.data[0].panel[i],
+            progressIndicatorBuilder: (context, url, progress) => Container(
+              margin: EdgeInsets.symmetric(vertical: 45),
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: progress.progress,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
