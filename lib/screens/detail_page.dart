@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:komik_app/models/chapter_history_model.dart';
 import 'package:komik_app/screens/read.dart';
 import 'package:komik_app/services/api_service.dart';
 import 'package:komik_app/colors.dart';
@@ -27,17 +28,33 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   late Future detail;
   late Future isFavorite;
+  late Future isHistory;
+  late Future isChapterHistory;
 
   FutureOr checkFavorite() {
     setState(() {
-      isFavorite = SqliteService.findOneFavorite("href", widget.href);
+      isFavorite = SqliteService.findOne("favorite", "href", widget.href);
+    });
+  }
+
+  FutureOr checkHistory() {
+    setState(() {
+      isHistory = SqliteService.findOne("history", "href", widget.href);
+    });
+  }
+
+  FutureOr checkChapterHistory() {
+    setState(() {
+      isChapterHistory = SqliteService.readChapterHistory(widget.href);
     });
   }
 
   @override
   void initState() {
     detail = ApiService.detail(widget.href);
-    isFavorite = SqliteService.findOneFavorite("href", widget.href);
+    isFavorite = SqliteService.findOne("favorite", "href", widget.href);
+    isHistory = SqliteService.findOne("history", "href", widget.href);
+    isChapterHistory = SqliteService.readChapterHistory(widget.href);
     super.initState();
   }
 
@@ -128,7 +145,7 @@ class _DetailPageState extends State<DetailPage> {
                     child: IconButton(
                         onPressed: () async {
                           if (snapshot.data != 1) {
-                            await SqliteService.insertFavorite({
+                            await SqliteService.insert("favorite", {
                               "title": data.data.title,
                               "thumbnail": data.data.thumbnail,
                               "rating": data.data.rating,
@@ -153,7 +170,7 @@ class _DetailPageState extends State<DetailPage> {
                   backgroundColor: Color(0xff23252F),
                   child: IconButton(
                       onPressed: () async {
-                        await SqliteService.insertFavorite({
+                        await SqliteService.insert("favorite", {
                           "title": data.data.title,
                           "thumbnail": data.data.thumbnail,
                           "rating": data.data.rating,
@@ -206,7 +223,7 @@ class _DetailPageState extends State<DetailPage> {
           children: data.data.chapter
               .asMap()
               .entries
-              .map((e) => _chapter(width, e.value, e.key, data.data.chapter))
+              .map((e) => _chapter(width, data, e.key, data.data.chapter))
               .toList(),
         )
       ],
@@ -326,33 +343,96 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _chapter(width, data, int i, List<Chapter> chapter) {
-    return InkWell(
-      onTap: () => Get.to(
-          () => Read(
-                href: data.href,
-                chapter: chapter,
-                hrefKomik: widget.href,
-                index: i,
-              ),
-          transition: Transition.rightToLeftWithFade,
-          preventDuplicates: false),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        decoration: BoxDecoration(
-            color: Color(0xff23252F), borderRadius: BorderRadius.circular(8)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(data.title),
-            Text(
-              data.date,
-              style: TextStyle(fontSize: width / 35, color: Color(0xff6B6E7D)),
-            )
-          ],
-        ),
-      ),
-    );
+  Widget _chapter(width, DetailModel data, int i, List<Chapter> chapter) {
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (snapshot.hasData)
+            return FutureBuilder(
+              builder: (context, AsyncSnapshot snapshots) {
+                if (snapshots.hasData) {
+                  List<ChapterHistoryModel> value = snapshots.data;
+                  // print();
+                  return InkWell(
+                    onTap: () async {
+                      if (value
+                          .where((element) =>
+                              element.href == data.data.chapter[i].href)
+                          .toList()
+                          .isEmpty) {
+                        await SqliteService.insert("chapter_history", {
+                          "href_id": widget.href,
+                          "title": data.data.chapter[i].title,
+                          "href": data.data.chapter[i].href,
+                          "update_at": DateTime.now().toString()
+                        });
+                      }
+                      if (snapshot.data == 0) {
+                        await SqliteService.insert("history", {
+                          "title": data.data.title,
+                          "thumbnail": data.data.thumbnail,
+                          "rating": data.data.rating,
+                          "href": widget.href,
+                          "type": data.data.type,
+                          "chapter": data.data.chapter[i].title,
+                          "updated_at": DateTime.now().toString()
+                        });
+                      } else {
+                        await SqliteService.update(
+                            "history",
+                            {
+                              "chapter": data.data.chapter[i].title,
+                              "updated_at": DateTime.now().toString()
+                            },
+                            "href",
+                            widget.href);
+                      }
+                      Get.to(
+                              () => Read(
+                                    href: data.data.chapter[i].href,
+                                    chapter: chapter,
+                                    hrefKomik: widget.href,
+                                    index: i,
+                                  ),
+                              transition: Transition.rightToLeftWithFade,
+                              preventDuplicates: false)
+                          ?.then((value) {
+                        checkHistory();
+                        checkChapterHistory();
+                      });
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: value
+                                  .where((element) =>
+                                      element.href == data.data.chapter[i].href)
+                                  .toList()
+                                  .isNotEmpty
+                              ? Color(0xff2F3345)
+                              : Color(0xff23252F),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(data.data.chapter[i].title),
+                          Text(
+                            data.data.chapter[i].date,
+                            style: TextStyle(
+                                fontSize: width / 35, color: Color(0xff6B6E7D)),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Text("Loading...");
+              },
+              future: isChapterHistory,
+            );
+          return Text("Loading...");
+        }),
+        future: isHistory);
   }
 
   Widget _info(String title, String value) {

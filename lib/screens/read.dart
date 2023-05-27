@@ -98,22 +98,24 @@ class _ReadState extends State<Read> {
                 color: Colors.white,
               ),
             ),
-      body: FutureBuilder(
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState != ConnectionState.done)
+      body: SafeArea(
+        child: FutureBuilder(
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState != ConnectionState.done)
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            if (snapshot.hasError)
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            if (snapshot.hasData) return _chapterBuilder(snapshot.data);
             return Center(
               child: CircularProgressIndicator(),
             );
-          if (snapshot.hasError)
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          if (snapshot.hasData) return _chapterBuilder(snapshot.data);
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-        future: read,
+          },
+          future: read,
+        ),
       ),
     );
   }
@@ -189,6 +191,7 @@ class _ReadState extends State<Read> {
               title: Text(
                 data.data[0].title,
                 style: TextStyle(fontFamily: "bold", fontSize: Get.width / 20),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),

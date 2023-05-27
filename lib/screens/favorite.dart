@@ -55,7 +55,7 @@ Widget _list(List<FavoriteModel> data) {
     children: data
         .map((e) => Dismissible(
             onDismissed: (direction) {
-              SqliteService.deleteFavorite(e.href);
+              SqliteService.delete("favorite","href", e.href);
             },
             key: UniqueKey(),
             child: CardRow(

@@ -17,11 +17,10 @@ class Navbar extends StatefulWidget {
 
 class _NavbarState extends State<Navbar> {
   PageController pageController = PageController(initialPage: 0);
-  int currentPageIndex = 0;
   int selectedIndex = 0;
+  
   void onTapItem(int i) {
     setState(() {
-      currentPageIndex = i;
       pageController.animateToPage(
         i,
         duration: Duration(milliseconds: 200),
@@ -68,7 +67,7 @@ class _NavbarState extends State<Navbar> {
       ),
       body: PageView(
         controller: pageController,
-        onPageChanged: onTapItem,
+        physics: NeverScrollableScrollPhysics(),
         children: screens,
       ),
     );

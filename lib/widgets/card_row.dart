@@ -1,4 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, must_be_immutable
+
+import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -16,15 +18,16 @@ class CardRow extends StatefulWidget {
   String type;
   String? chapter;
   String? genre;
-  CardRow(
-      {super.key,
-      required this.title,
-      required this.thumbnail,
-      required this.rating,
-      required this.type,
-      required this.href,
-      this.chapter,
-      this.genre});
+  CardRow({
+    super.key,
+    required this.title,
+    required this.thumbnail,
+    required this.rating,
+    required this.type,
+    required this.href,
+    this.chapter,
+    this.genre,
+  });
 
   @override
   State<CardRow> createState() => _CardRowState();
@@ -104,8 +107,9 @@ class _CardRowState extends State<CardRow> {
           ],
         ),
       ),
-      openBuilder: (context, action) =>
-          DetailPage(thumbnail: widget.thumbnail, href: widget.href),
+      openBuilder: (context, action) {
+        return DetailPage(thumbnail: widget.thumbnail, href: widget.href);
+      },
     );
   }
 }
