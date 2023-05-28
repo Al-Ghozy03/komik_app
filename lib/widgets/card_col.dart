@@ -68,7 +68,7 @@ class _CardColState extends State<CardCol> {
           ),
           SizedBox(height: 5),
           Text(
-            widget.data.chapter,
+            widget.data.title,
             style: TextStyle(
               fontFamily: "semibold",
               fontSize: width / 40,

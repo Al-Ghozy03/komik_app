@@ -37,32 +37,35 @@ class _NavbarState extends State<Navbar> {
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(
             horizontal: Get.width / 20, vertical: Get.width / 15),
-        child: BottomNavigationBar(
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          currentIndex: selectedIndex,
-          unselectedItemColor: Colors.white,
-          selectedItemColor: blueTheme,
-          backgroundColor: Color(0xff23252F),
-          type: BottomNavigationBarType.fixed,
-          onTap: onTapItem,
-          items: [
-            BottomNavigationBarItem(
-                icon:
-                    Icon(selectedIndex == 0 ? Iconsax.home_25 : Iconsax.home_2),
-                label: ""),
-            BottomNavigationBarItem(
-                icon: Icon(selectedIndex == 1 ? Iconsax.heart5 : Iconsax.heart),
-                label: ""),
-            BottomNavigationBarItem(
-                icon: Icon(selectedIndex == 2 ? Iconsax.clock5 : Iconsax.clock),
-                label: ""),
-            BottomNavigationBarItem(
-                icon: Icon(selectedIndex == 3
-                    ? Iconsax.more_circle5
-                    : Iconsax.more_circle),
-                label: ""),
-          ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: BottomNavigationBar(
+            showUnselectedLabels: false,
+            showSelectedLabels: false,
+            currentIndex: selectedIndex,
+            unselectedItemColor: Colors.white,
+            selectedItemColor: blueTheme,
+            backgroundColor: Color(0xff23252F),
+            type: BottomNavigationBarType.fixed,
+            onTap: onTapItem,
+            items: [
+              BottomNavigationBarItem(
+                  icon:
+                      Icon(selectedIndex == 0 ? Iconsax.home_25 : Iconsax.home_2),
+                  label: ""),
+              BottomNavigationBarItem(
+                  icon: Icon(selectedIndex == 1 ? Iconsax.heart5 : Iconsax.heart),
+                  label: ""),
+              BottomNavigationBarItem(
+                  icon: Icon(selectedIndex == 2 ? Iconsax.clock5 : Iconsax.clock),
+                  label: ""),
+              BottomNavigationBarItem(
+                  icon: Icon(selectedIndex == 3
+                      ? Iconsax.more_circle5
+                      : Iconsax.more_circle),
+                  label: ""),
+            ],
+          ),
         ),
       ),
       body: PageView(
